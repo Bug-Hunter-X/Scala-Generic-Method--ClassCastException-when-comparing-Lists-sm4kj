@@ -1,0 +1,29 @@
+```scala
+import org.scalactic.{Equality, TolerantNumerics}
+
+class MyClass[T](val value: T) {
+  implicit val tolerantNumerics = TolerantNumerics.tolerantDoubleEquality
+  implicit val listEquality = new Equality[List[Int]]{
+      override def areEqual(a: List[Int], b: Any): Boolean = a == b 
+  }
+
+  def myMethod(x: T)(implicit equality: Equality[T]): T = {
+    if (equality.areEqual(x, value)) {
+      value 
+    } else {
+      throw new Exception("Values do not match") 
+    }
+  }
+}
+
+object Main extends App {
+  val myInt = new MyClass(5)
+  println(myInt.myMethod(5))
+  
+  val myString = new MyClass("hello")
+  println(myString.myMethod("hello"))
+  
+  val myList = new MyClass(List(1, 2, 3))
+  println(myList.myMethod(List(1, 2, 3)))
+}
+```
